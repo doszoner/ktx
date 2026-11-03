@@ -1628,46 +1628,36 @@ void ClientConnect(void)
 		stuffcmd_flags(self, STUFFCMD_IGNOREINDEMO, "team " "coop" "\n");
 	}
 
-	// qqshka: force damn colors in CTF.
+	// Team modes and matchless CTF assign every entrant on the server.
+	// Only previously accepted players count; ties consistently choose red.
+	if (isTeam() || (isCTF() && k_matchLess))
+	{
+		int balance = 0;
+		for (p = world; (p = find_plr(p));)
+		{
+			if (p == self || !p->k_accepted)
+			{
+				continue;
+			}
+			if (streq(getteam(p), "red"))
+			{
+				balance++;
+			}
+			else if (streq(getteam(p), "blue"))
+			{
+				balance--;
+			}
+		}
+		SetUserInfo(self, "team", balance > 0 ? "blue" : "red", 0);
+		stuffcmd_flags(self, STUFFCMD_IGNOREINDEMO, "team %s\n", balance > 0 ? "blue" : "red");
+		G_bprint(PRINT_HIGH, "%s automatically set to team: %s\n", self->netname,
+				redtext(balance > 0 ? "blue" : "red"));
+	}
+
+	// CTF alone forces flag-team colours.
 	if (isCTF())
 	{
-		int red = 0; // Keeps track of which team and colors to set for new player
-
-		// If matchless CTF, make sure team is red or blue
-		if (k_matchLess)
-		{
-			if (!(streq(getteam(self), "red") || streq(getteam(self), "blue")))
-			{
-				// Compare number of blue and red players. If red > blue (i.e. red > 0), set new player to blue.
-				gedict_t *p;
-				for (p = world; (p = find_plr(p));)
-				{
-					if (streq(getteam(p), "red"))
-					{
-						red++;
-					}
-					else
-					{
-						red--;
-					}
-				}
-
-				SetUserInfo(self, "team", red > 0 ? "blue" : "red", 0);
-				if (red > 0)
-				{
-					stuffcmd_flags(self, STUFFCMD_IGNOREINDEMO, "team " "blue" "\n");
-				}
-				else
-				{
-					stuffcmd_flags(self, STUFFCMD_IGNOREINDEMO, "team " "red" "\n");
-				}
-
-				G_bprint(PRINT_HIGH, "%s automatically set to team: %s\n", self->netname,
-							redtext(red > 0 ? "blue" : "red"));
-			}
-			G_sprint(self, PRINT_HIGH,
-						"To change teams, /disconnect, /team red or /team blue, then /reconnect\n");
-		}
+		int red;
 
 		// Force colors
 		red = streq(getteam(self), "red");

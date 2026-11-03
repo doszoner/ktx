@@ -214,6 +214,10 @@ set(QVM_C_FLAGS -DQ3_VM -S -Wf-target=bytecode -Wf-g)
 if(BOT_SUPPORT)
 	set(QVM_C_FLAGS ${QVM_C_FLAGS} -DBOT_SUPPORT=1)
 endif()
+set(KTX_BUILD_DATE "" CACHE STRING "Override the QVM build date for reproducible builds")
+if(KTX_BUILD_DATE)
+	list(APPEND QVM_C_FLAGS "-DKTX_BUILD_DATE=\\\"${KTX_BUILD_DATE}\\\"")
+endif()
 set(QVM_INCDIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 # Write first chunk of QVM_LIST_FILE.

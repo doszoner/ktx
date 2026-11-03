@@ -77,7 +77,10 @@
 #define MOD_NAME				("KTX")
 #define MOD_FULLNAME			("KTX: Kombat Teams eXtreme")
 #define MOD_VERSION				("1.48-dev")
-#define MOD_BUILD_DATE			(__DATE__ ", " __TIME__)
+#ifndef KTX_BUILD_DATE
+#define KTX_BUILD_DATE			(__DATE__ ", " __TIME__)
+#endif
+#define MOD_BUILD_DATE			(KTX_BUILD_DATE)
 #define MOD_SERVERINFO_MOD_KEY	("ktxver")
 #define MOD_URL					("https://github.com/QW-Group/ktx")
 #define GIT_COMMIT				("")
