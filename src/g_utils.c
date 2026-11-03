@@ -1012,39 +1012,67 @@ float fKey(gedict_t *ed, char *key)
 	return atof(string);
 }
 
+// FTE has no message buffer for bots: a MSG_ONE write to one prints
+// "Not a client" on the server console and is dropped anyway.
+static qbool SkipWrite(int to)
+{
+	return (to == MSG_ONE) && PROG_TO_EDICT(g_globalvars.msg_entity)->isBot;
+}
+
 void WriteEntity(int to, gedict_t *ed)
 {
-	trap_WriteEntity(to, NUM_FOR_EDICT(ed));
+	if (!SkipWrite(to))
+	{
+		trap_WriteEntity(to, NUM_FOR_EDICT(ed));
+	}
 }
 
 void WriteByte(int to, int data)
 {
-	trap_WriteByte(to, data);
+	if (!SkipWrite(to))
+	{
+		trap_WriteByte(to, data);
+	}
 }
 
 void WriteShort(int to, int data)
 {
-	trap_WriteShort(to, data);
+	if (!SkipWrite(to))
+	{
+		trap_WriteShort(to, data);
+	}
 }
 
 void WriteLong(int to, int data)
 {
-	trap_WriteLong(to, data);
+	if (!SkipWrite(to))
+	{
+		trap_WriteLong(to, data);
+	}
 }
 
 void WriteString(int to, char *data)
 {
-	trap_WriteString(to, data);
+	if (!SkipWrite(to))
+	{
+		trap_WriteString(to, data);
+	}
 }
 
 void WriteAngle(int to, float data)
 {
-	trap_WriteAngle(to, data);
+	if (!SkipWrite(to))
+	{
+		trap_WriteAngle(to, data);
+	}
 }
 
 void WriteCoord(int to, float data)
 {
-	trap_WriteCoord(to, data);
+	if (!SkipWrite(to))
+	{
+		trap_WriteCoord(to, data);
+	}
 }
 
 void disableupdates(gedict_t *ed, float time)
